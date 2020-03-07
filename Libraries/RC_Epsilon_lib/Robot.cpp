@@ -29,6 +29,7 @@ void eps::Robot::readGyro() {
         if (counter == 8) {
             counter = 0;
             if (Re_buf[0] == 0xAA && Re_buf[7] == 0x55) {
+                Serial.println("lol");
                 this->gyro.yaw = DEG_TO_RAD * ((Re_buf[1] << 8 | Re_buf[2]) / 100.00);
                 this->gyro.pitch = (int16_t)(Re_buf[3]<<8|Re_buf[4])/100.00;
                 this->gyro.roll = (int16_t)(Re_buf[5]<<8|Re_buf[6])/100.00;
@@ -42,7 +43,11 @@ void eps::Robot::setKicker(bool state) {
     digitalWrite(this->pin_kicker, state);
 }
 
-
+void eps::Robot::invertMotor(byte port) {
+    byte tmp = this->pin_motors_in1[port];
+    this->pin_motors_in1[port] = this->pin_motors_in2[port];
+    this->pin_motors_in2[port] = tmp;
+}
 
 bool eps::Robot::readButton(byte btn) {
     if (btn == LEFT) {
@@ -81,13 +86,15 @@ void eps::Robot::setSpeed(byte port, double motor_speed) {
 
 bool eps::Robot::init() {
     Serial.begin(115200);
-    Serial1.begin(115200);
-    delay(500);
-    Serial1.write(0xA5);
-    Serial1.write(0x54);
-    delay(5000);
+    Serial1.begin(115200);// SoftwareSerial can only support 9600 baud rate for GY 25 but Serial1 can support 115200 and 9600 both
+    delay(4000);
     Serial1.write(0XA5);
-    Serial1.write(0X51);
+    Serial1.write(0X54);//correction mode
+    delay(4000);
+    Serial1.write(0XA5);
+    Serial1.write(0X51);//0X51:query mode, return directly to the angle value, to be sent each read, 0X52:Automatic mode,send a direct return angle, only initialization
+    Serial1.write(0XA5);
+    Serial1.write(0X55);
 
     this->pixy.init();
     this->pixy.setLED(128, 0, 128);
@@ -102,6 +109,11 @@ bool eps::Robot::init() {
 
     pinMode(this->pin_line_multiplxr_1, OUTPUT);
     pinMode(this->pin_line_multiplxr_2, OUTPUT);
+
+    pinMode(this->pin_standby1, OUTPUT);
+    digitalWrite(this->pin_standby1, HIGH);
+    pinMode(this->pin_standby2, OUTPUT);
+    digitalWrite(this->pin_standby2, HIGH);
 
     for (int i = 0; i < 4; ++i) {
         pinMode(this->pin_motors_pwm[i], OUTPUT);

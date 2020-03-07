@@ -4,9 +4,12 @@
 #include <Arduino.h>
 #include <Pixy2.h>
 
-#define LEFT 0
-#define RIGHT 2
-#define CENTER 1
+enum Location
+{
+    LEFT,
+    CENTER,
+    RIGHT
+};
 
 namespace eps {
     struct Gyro {
@@ -34,7 +37,8 @@ namespace eps {
 
             const byte pin_motors_pwm[4] = {2, 12, 8, 6};
 
-            const byte pin_
+            const byte pin_standby1 = 4;
+            const byte pin_standby2 = 10;
 
         public:
             byte pin_motors_in1[4] = {36, 42, 44, 34};
@@ -51,6 +55,7 @@ namespace eps {
             void setLED(byte led, bool state);
 
             void setSpeed(byte port, double motor_speed);
+            void invertMotor(byte port);
 
             void setKicker(bool state);
 
