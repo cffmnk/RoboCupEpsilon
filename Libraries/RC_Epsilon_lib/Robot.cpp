@@ -39,6 +39,7 @@ void eps::Robot::readGyro() {
     this->gyro = {0, 0 ,0};
 }
 
+
 void eps::Robot::setKicker(bool state) {
     digitalWrite(this->pin_kicker, state);
 }
@@ -97,7 +98,7 @@ bool eps::Robot::init() {
     Serial1.write(0X55);
 
     this->pixy.init();
-    this->pixy.setLED(128, 0, 128);
+    this->pixy.setLED(255, 255, 255);
 
     pinMode(this->pin_led_left, OUTPUT);
     pinMode(this->pin_led_center, OUTPUT);

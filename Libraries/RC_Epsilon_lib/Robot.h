@@ -11,6 +11,17 @@ enum Location
     RIGHT
 };
 
+struct camBlock {
+    int x;
+    int y;
+    int w;
+    int h;
+    float dir;
+    float dist;
+    bool found;
+    uint32_t t;
+};
+
 namespace eps {
     struct Gyro {
         double yaw;
@@ -45,7 +56,7 @@ namespace eps {
             byte pin_motors_in2[4] = {38, 40, 46, 32};
             Pixy2 pixy;
             Gyro gyro;
-            uint16_t line_sensors[4][4] = {0};
+            uint16_t line_sensors[4][4];
 
         public:
             bool init();
@@ -63,6 +74,8 @@ namespace eps {
             void calibrateGyro();
 
             void readLine();
+        
+            void moveAngle(double angle, double speed);
     };
 }
 
